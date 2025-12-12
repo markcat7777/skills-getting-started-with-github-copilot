@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Clear loading message
       activitiesList.innerHTML = "";
+      // Reset dropdown to placeholder to avoid duplicate options on refresh
+      activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
@@ -29,7 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
             <strong>Participants:</strong>
             <ul class="participants-list">
               ${details.participants.length
-                ? details.participants.map((p) => `<li>${p}</li>`).join("")
+                ? details.participants
+                    .map(
+                      (p) =>
+                        `<li class="participant-item"><span class="participant-name">${p}</span><button class="delete-btn" data-participant="${p}" aria-label="Remove ${p}">&times;</button></li>`
+                    )
+                    .join("")
                 : "<li class='empty'>No participants yet</li>"}
             </ul>
           </div>
@@ -70,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        await fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
